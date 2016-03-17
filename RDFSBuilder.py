@@ -93,7 +93,7 @@ for entry in entries:
     writeProperty(prefix, 'hasCode', entry[27])
     writeTerminus(prefix, 'hasName', eventName)
 
-    # Write Actor classes
+    # Write Actor1 class
     if entry[6] not in listOfActors:
         writeClass(prefix, entry[6], 'actor')
         writeProperty(prefix, 'rdfs:subClassOf', entry[5])
@@ -102,6 +102,7 @@ for entry in entries:
         writeTerminus(prefix, 'hasTypeCode', entry[12])
         listOfActors.append(entry[6])
 
+    # Write Actor2 class
     if entry[16] not in listOfActors:
         writeClass(prefix, entry[16], 'actor')
         writeProperty(prefix, 'rdfs:subClassOf', entry[15])
@@ -110,7 +111,7 @@ for entry in entries:
         writeTerminus(prefix, 'hasTypeCode', entry[22])
         listOfActors.append(entry[16])
 
-    # Write Country Classes
+    # Write country class from Actor1
     if entry[7] not in listOfCountries:
         writeClass(prefix, entry[7], 'country')
         if entry[7] in listOfAfricanCountries:
@@ -123,6 +124,7 @@ for entry in entries:
             writeTerminus(prefix, 'rdfs:subClassOf', 'otherCountry')
         listOfCountries.append(entry[7])
 
+    # Write country class from Actor2
     if entry[17] not in listOfCountries:
         writeClass(prefix, entry[7], 'country')
         if entry[17] in listOfAfricanCountries:
@@ -134,5 +136,6 @@ for entry in entries:
         else:
             writeTerminus(prefix, 'rdfs:subClassOf', 'otherCountry')
         listOfCountries.append(entry[17])
+
 fw.close()
 
