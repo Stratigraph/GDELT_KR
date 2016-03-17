@@ -87,28 +87,28 @@ for entry in entries:
 
     # Write event classes
     writeClass(prefix, entry[0], 'event')
-    writeProperty(prefix, 'hasActor1Code', entry[5])
-    writeProperty(prefix, 'hasActor2Code', entry[15])
-    writeProperty(prefix, 'hasDate', entry[1])
-    writeProperty(prefix, 'hasCode', entry[27])
-    writeTerminus(prefix, 'hasName', eventName)
+    writeProperty(prefix, 'eventDB:hasActor1Code', entry[5])
+    writeProperty(prefix, 'eventDB:hasActor2Code', entry[15])
+    writeProperty(prefix, 'eventDB:hasDate', entry[1])
+    writeProperty(prefix, 'eventDB:hasCode', entry[27])
+    writeTerminus(prefix, 'eventDB:hasName', eventName)
 
     # Write Actor1 class
     if entry[6] not in listOfActors:
         writeClass(prefix, entry[6], 'actor')
-        writeProperty(prefix, 'rdfs:subClassOf', entry[5])
-        writeProperty(prefix, 'hasCountryCode', entry[7])
-        writeProperty(prefix, 'hasGroupCode', entry[8])
-        writeTerminus(prefix, 'hasTypeCode', entry[12])
+        writeProperty(prefix, 'eventDB:hasCountryCode', entry[7])
+        writeProperty(prefix, 'eventDB:hasGroupCode', entry[8])
+        writeProperty(prefix, 'eventDB:hasTypeCode', entry[12])
+        writeTerminus(prefix, 'rdfs:subClassOf', entry[5])
         listOfActors.append(entry[6])
 
     # Write Actor2 class
     if entry[16] not in listOfActors:
         writeClass(prefix, entry[16], 'actor')
-        writeProperty(prefix, 'rdfs:subClassOf', entry[15])
-        writeProperty(prefix, 'hasCountryCode', entry[17])
-        writeProperty(prefix, 'hasGroupCode', entry[18])
-        writeTerminus(prefix, 'hasTypeCode', entry[22])
+        writeProperty(prefix, 'eventDB:hasCountryCode', entry[17])
+        writeProperty(prefix, 'eventDB:hasGroupCode', entry[18])
+        writeProperty(prefix, 'eventDB:hasTypeCode', entry[22])
+        writeTerminus(prefix, 'rdfs:subClassOf', entry[15])
         listOfActors.append(entry[16])
 
     # Write country class from Actor1
@@ -126,7 +126,7 @@ for entry in entries:
 
     # Write country class from Actor2
     if entry[17] not in listOfCountries:
-        writeClass(prefix, entry[7], 'country')
+        writeClass(prefix, entry[17], 'country')
         if entry[17] in listOfAfricanCountries:
             writeTerminus(prefix, 'rdfs:subClassOf', 'AfricanUnionCountry')
         elif entry[17] in listOfNATOCountries:
