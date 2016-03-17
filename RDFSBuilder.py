@@ -1,6 +1,10 @@
 import csv
 import os
 
+def set_path(var):
+    global path    # Needed to modify global copy of globvar
+    path = var
+    return path
 
 def getName(eventCode, dictionary):
     for item in dictionary:
@@ -8,7 +12,22 @@ def getName(eventCode, dictionary):
             return item[1]
     return 'NoName'
 
-# Set path to rdf file 
+def writeClass(prefix, instance, class_):
+    if instance != '':
+        path.write(prefix + instance + '\t a \t' + prefix + class_ + ' ;\n')
+    return 0
+
+def writeProperty(prefix, predicate, object_):
+    if object_ != '':
+        path.write('\t' + predicate + '\t' + prefix + object_ + ' ;\n')
+    return 0
+
+def writeTerminus(prefix, predicate, object_):
+    if object_ != '':
+        path.write('\t' + predicate + '\t' + prefix + object_ + ' .\n')
+    return 0
+
+# Set path to rdf file
 __location__ = os.path.realpath(
     os.path.join(os.getcwd(), os.path.dirname(__file__)))
 fn = "gdelt_ebola.out"
@@ -28,6 +47,7 @@ f.close()
 # Open file for writing
 fw = open(os.path.join(__location__, out), 'w+')
 
+set_path(fw)
 # remove headers
 cameoXR.pop(0)
 entries.pop(0)
@@ -35,7 +55,7 @@ entries.pop(0)
 print "Writing Headers...\n"
 
 # Write header to file
-fw.write("@prefix eventDB: <http://www.kearnsw.com/> .\n"
+fw.write("@prefix eventDB: <http://www.kearnsw.com/eventDB#> .\n"
          "@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .\n"
          "@prefix owl: <http://www.w3.org/2002/07/owl#> .\n"
          "@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .\n")
@@ -66,59 +86,53 @@ for entry in entries:
     eventName = eventName.translate(None, ''.join(charsToRemove)).strip()
 
     # Write event classes
-    fw.write(prefix + entry[0] + '\t a \t' + prefix + 'event' + ' ;\n')
-    if entry[5]:
-        fw.write('\t' + prefix + 'hasActor1Code' + '\t' + prefix + entry[5] + ' ;\n')
-    if entry[15]:
-        fw.write('\t' + prefix + 'hasActor2Code' + '\t' + prefix + entry[15] + ' ;\n')
-    fw.write('\t' + prefix + 'hasDate' + '\t' + '\"' + entry[1] + '\"' + ' ;\n'
-             '\t' + prefix + 'hasCode' + '\t' + prefix + entry[27] + ' ;\n'
-             '\t' + prefix + 'hasName' + '\t' + prefix + eventName + ' .\n')
+    writeClass(prefix, entry[0], 'event')
+    writeProperty(prefix, 'hasActor1Code', entry[5])
+    writeProperty(prefix, 'hasActor2Code', entry[15])
+    writeProperty(prefix, 'hasDate', entry[1])
+    writeProperty(prefix, 'hasCode', entry[27])
+    writeTerminus(prefix, 'hasName', eventName)
 
     # Write Actor classes
     if entry[6] not in listOfActors:
-        fw.write(prefix + entry[6] + '\t a \t' + prefix + 'actor' + ' ;\n'
-                 '\t' + 'rdfs:subClassOf' + '\t' + prefix + entry[5] + ' ;\n'
-                 '\t' + prefix + 'hasCountryCode' + '\t' + prefix + entry[7] + ' ;\n'      # Country Code
-                 '\t' + prefix + 'hasGroupCode' + '\t' + prefix + entry[8] + ' ;\n'      # Group Code
-                 '\t' + prefix + 'hasTypeCode' + '\t' + prefix + entry[12] + ' .\n')    # Type Code
+        writeClass(prefix, entry[6], 'actor')
+        writeProperty(prefix, 'rdfs:subClassOf', entry[5])
+        writeProperty(prefix, 'hasCountryCode', entry[7])
+        writeProperty(prefix, 'hasGroupCode', entry[8])
+        writeTerminus(prefix, 'hasTypeCode', entry[12])
         listOfActors.append(entry[6])
 
     if entry[16] not in listOfActors:
-        fw.write(prefix + entry[16] + '\t a \t' + prefix + 'actor' + ' ;\n'
-                 '\t' + 'rdfs:subClassOf' + '\t' + prefix + entry[15] + ' ;\n'
-                 '\t' + prefix + 'hasCountryCode' + '\t' + prefix + entry[17] + ' ;\n'     # Country Code
-                 '\t' + prefix + 'hasGroupCode' + '\t' + prefix + entry[18] + ' ;\n'     # Group Code
-                 '\t' + prefix + 'hasTypeCode' + '\t' + prefix + entry[22] + ' .\n')    # Type Code
+        writeClass(prefix, entry[16], 'actor')
+        writeProperty(prefix, 'rdfs:subClassOf', entry[15])
+        writeProperty(prefix, 'hasCountryCode', entry[17])
+        writeProperty(prefix, 'hasGroupCode', entry[18])
+        writeTerminus(prefix, 'hasTypeCode', entry[22])
         listOfActors.append(entry[16])
 
     # Write Country Classes
     if entry[7] not in listOfCountries:
-        fw.write(prefix + entry[7] + '\t a \t' + prefix + 'country' + ' ;\n')
-        if entry[7] == '':
-            fw.write('\t' + 'rdfs:subClassOf' + '\t' + 'noCountry' + ' .\n')
-        elif entry[7] in listOfAfricanCountries:
-            fw.write('\t' + 'rdfs:subClassOf' + '\t' + prefix + 'africanCountry' + ' .\n')
+        writeClass(prefix, entry[7], 'country')
+        if entry[7] in listOfAfricanCountries:
+            writeTerminus(prefix, 'rdfs:subClassOf', 'AfricanUnionCountry')
         elif entry[7] in listOfNATOCountries:
-            fw.write('\t' + 'rdfs:subClassOf' + '\t' + prefix + 'NATOCountry' + ' .\n')
+            writeTerminus(prefix, 'rdfs:subClassOf', 'NATOCountry')
         elif entry[7] in listOfRussianAlliedCountries:
-            fw.write('\t' + 'rdfs:subClassOf' + '\t' + prefix + 'russianAlliedCountry' + ' .\n')
+            writeTerminus(prefix, 'rdfs:subClassOf', 'russianAlliedCountry')
         else:
-            fw.write('\t' + 'rdfs:subClassOf' + '\t' + prefix + 'otherCountry' + ' .\n')
+            writeTerminus(prefix, 'rdfs:subClassOf', 'otherCountry')
         listOfCountries.append(entry[7])
 
     if entry[17] not in listOfCountries:
-        fw.write(prefix + entry[17] + '\t a \t' + prefix + 'country' + ' ;\n')
-        if entry[17] == '':
-            fw.write('\t' + 'rdfs:subClassOf' + '\t' + 'noCountry' + ' .\n')
-        elif entry[17] in listOfAfricanCountries:
-            fw.write('\t' + 'rdfs:subClassOf' + '\t' + prefix + 'africanCountry' + ' .\n')
+        writeClass(prefix, entry[7], 'country')
+        if entry[17] in listOfAfricanCountries:
+            writeTerminus(prefix, 'rdfs:subClassOf', 'AfricanUnionCountry')
         elif entry[17] in listOfNATOCountries:
-            fw.write('\t' + 'rdfs:susbClassOf' + '\t' + prefix + 'NATOCountry' + ' .\n')
+            writeTerminus(prefix, 'rdfs:subClassOf', 'NATOCountry')
         elif entry[17] in listOfRussianAlliedCountries:
-            fw.write('\t' + 'rdfs:subClassOf' + '\t' + prefix + 'russianAlliedCountry' + ' .\n')
+            writeTerminus(prefix, 'rdfs:subClassOf', 'russianAlliedCountry')
         else:
-            fw.write('\t' + 'rdfs:subClassOf' + '\t' + prefix + 'otherCountry' + ' .\n')
+            writeTerminus(prefix, 'rdfs:subClassOf', 'otherCountry')
         listOfCountries.append(entry[17])
 fw.close()
 
