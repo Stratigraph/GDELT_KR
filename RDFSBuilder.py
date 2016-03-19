@@ -79,18 +79,19 @@ for entry in entries:
     eventName = getName(entry[27], cameoXR)
 
     # remove special characters that are not recognized by RDF-S
-    entry[6] = entry[6].translate(None, ''.join(charsToRemove)).strip()
-    entry[16] = entry[16].translate(None, ''.join(charsToRemove)).strip()
-    entry[5] = entry[5].translate(None, ''.join(charsToRemove)).strip()
-    entry[15] = entry[15].translate(None, ''.join(charsToRemove)).strip()
+    for i in range(len(entry)):
+        entry[i] = entry[i].translate(None, ''.join(charsToRemove)).strip()
     eventName = eventName.translate(None, ''.join(charsToRemove)).strip()
 
     # Write event classes
     writeClass(prefix, entry[0], 'event')
-    writeProperty(prefix, 'eventDB:hasActor1Code', entry[5])
-    writeProperty(prefix, 'eventDB:hasActor2Code', entry[15])
+    writeProperty(prefix, 'eventDB:hasActor1', entry[6])
+    writeProperty(prefix, 'eventDB:hasActor2', entry[16])
     writeProperty(prefix, 'eventDB:hasDate', entry[1])
     writeProperty(prefix, 'eventDB:hasCode', entry[27])
+    writeProperty(prefix, 'eventDB:hasGoldsteinScale', entry[31])
+    writeProperty(prefix, 'eventDB:hasAvgTone', entry[35])
+    writeProperty(prefix, 'eventDB:hasCountryFIPS', entry[51])
     writeTerminus(prefix, 'eventDB:hasName', eventName)
 
     # Write Actor1 class
@@ -98,7 +99,12 @@ for entry in entries:
         writeClass(prefix, entry[6], 'actor')
         writeProperty(prefix, 'eventDB:hasCountryCode', entry[7])
         writeProperty(prefix, 'eventDB:hasGroupCode', entry[8])
+        writeProperty(prefix, 'eventDB:hasEthnicCode', entry[9])
+        writeProperty(prefix, 'eventDB:hasReligion', entry[10])
+        writeProperty(prefix, 'eventDB:hasReligion', entry[11])
         writeProperty(prefix, 'eventDB:hasTypeCode', entry[12])
+        writeProperty(prefix, 'eventDB:hasTypeCode', entry[13])
+        writeProperty(prefix, 'eventDB:hasTypeCode', entry[14])
         writeTerminus(prefix, 'rdfs:subClassOf', entry[5])
         listOfActors.append(entry[6])
 
@@ -107,7 +113,12 @@ for entry in entries:
         writeClass(prefix, entry[16], 'actor')
         writeProperty(prefix, 'eventDB:hasCountryCode', entry[17])
         writeProperty(prefix, 'eventDB:hasGroupCode', entry[18])
+        writeProperty(prefix, 'eventDB:hasEthnicCode', entry[19])
+        writeProperty(prefix, 'eventDB:hasReligion', entry[20])
+        writeProperty(prefix, 'eventDB:hasReligion', entry[21])
         writeProperty(prefix, 'eventDB:hasTypeCode', entry[22])
+        writeProperty(prefix, 'eventDB:hasTypeCode', entry[23])
+        writeProperty(prefix, 'eventDB:hasTypeCode', entry[24])
         writeTerminus(prefix, 'rdfs:subClassOf', entry[15])
         listOfActors.append(entry[16])
 
@@ -128,7 +139,7 @@ for entry in entries:
     if entry[17] not in listOfCountries:
         writeClass(prefix, entry[17], 'country')
         if entry[17] in listOfAfricanCountries:
-            writeTerminus(prefix, 'rdfs:subClassOf', 'AfricanUnionCountry')
+            writeTerminus(prefix, 'rdfs:subClassOf', 'africanUnionCountry')
         elif entry[17] in listOfNATOCountries:
             writeTerminus(prefix, 'rdfs:subClassOf', 'NATOCountry')
         elif entry[17] in listOfRussianAlliedCountries:
