@@ -1,10 +1,12 @@
 import csv
 import os
 
+
 def set_path(var):
-    global path    # Needed to modify global copy of globvar
+    global path  # Needed to modify global copy of globvar
     path = var
     return path
+
 
 def getName(eventCode, dictionary):
     for item in dictionary:
@@ -12,20 +14,24 @@ def getName(eventCode, dictionary):
             return item[1]
     return 'NoName'
 
+
 def writeClass(prefix, instance, class_):
     if instance != '':
         path.write(prefix + instance + '\t a \t' + prefix + class_ + ' ;\n')
     return 0
+
 
 def writeProperty(prefix, predicate, object_):
     if object_ != '':
         path.write('\t' + predicate + '\t' + prefix + object_ + ' ;\n')
     return 0
 
+
 def writeTerminus(prefix, predicate, object_):
     if object_ != '':
         path.write('\t' + predicate + '\t' + prefix + object_ + ' .\n')
     return 0
+
 
 # Set path to rdf file
 __location__ = os.path.realpath(
@@ -92,6 +98,8 @@ for entry in entries:
     writeProperty(prefix, 'eventDB:hasGoldsteinScale', entry[31])
     writeProperty(prefix, 'eventDB:hasAvgTone', entry[35])
     writeProperty(prefix, 'eventDB:hasCountryFIPS', entry[51])
+    writeProperty(prefix, 'eventDB:hasLatitude', entry[53])
+    writeProperty(prefix, 'eventDB:hasLongitude', entry[54])
     writeTerminus(prefix, 'eventDB:hasName', eventName)
 
     # Write Actor1 class
@@ -149,4 +157,3 @@ for entry in entries:
         listOfCountries.append(entry[17])
 
 fw.close()
-
